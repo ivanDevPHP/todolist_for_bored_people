@@ -1,13 +1,8 @@
 <template>
   <div class="item">
-      <input type="checkbox" v-model="item.completed">
+      <input type="checkbox" @change="update()" v-model="item.completed">
       <span :class="['itemText', item.completed? 'completed' : '']">{{item.todo}}</span>
-      <button class="edit">
-           <font-awesome-icon
-           icon="edit"
-           />
-      </button>
-      <button class="delete">
+      <button class="delete" @click="remove()">
            <font-awesome-icon
            icon="trash"
            />
@@ -17,7 +12,29 @@
 
 <script>
 export default {
-    props: ['item']
+    props: ['item'],
+    methods:{
+        update(){
+            axios.put('api/todos/update/' + this.item.id, {
+                completed: this.item.completed
+            }).then(response =>{
+                if(response.status >= 200 && response.status <= 300){
+                    alert('Item updated succesfully');
+                    this.$emit('reload');
+                }
+            })
+        },
+        remove(){
+            axios.delete('api/todos/delete/' + this.item.id, {
+                completed: this.item.completed
+            }).then(response =>{
+                if(response.status >= 200 && response.status <= 300){
+                    alert('Item deleted succesfully');
+                    this.$emit('reload');
+                }
+            })
+        }
+    }
 }
 </script>
 

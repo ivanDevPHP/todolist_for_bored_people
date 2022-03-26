@@ -23,7 +23,7 @@ export default {
         addItem(){
             if(this.item.name !== ''){
                 axios.post('api/todos/store',{
-                    todo: this.item.todo
+                    todo: this.item.name
                 }).then(response => {
                     if(response.status >= 200 && response.status < 300){
                         this.item.name = null;

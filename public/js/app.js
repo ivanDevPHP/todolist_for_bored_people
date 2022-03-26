@@ -20383,7 +20383,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.item.name !== '') {
         axios.post('api/todos/store', {
-          todo: this.item.todo
+          todo: this.item.name
         }).then(function (response) {
           if (response.status >= 200 && response.status < 300) {
             _this.item.name = null;
@@ -20419,13 +20419,36 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['item']
+  props: ['item'],
+  methods: {
+    update: function update() {
+      var _this = this;
+
+      axios.put('api/todos/update/' + this.item.id, {
+        completed: this.item.completed
+      }).then(function (response) {
+        if (response.status >= 200 && response.status <= 300) {
+          alert('Item updated succesfully');
+
+          _this.$emit('reload');
+        }
+      });
+    },
+    remove: function remove() {
+      var _this2 = this;
+
+      axios["delete"]('api/todos/delete/' + this.item.id, {
+        completed: this.item.completed
+      }).then(function (response) {
+        if (response.status >= 200 && response.status <= 300) {
+          alert('Item deleted succesfully');
+
+          _this2.$emit('reload');
+        }
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -20442,6 +20465,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _listItem_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./listItem.vue */ "./resources/js/components/listItem.vue");
+//
 //
 //
 //
@@ -44073,27 +44097,32 @@ var render = function () {
           : _vm.item.completed,
       },
       on: {
-        change: function ($event) {
-          var $$a = _vm.item.completed,
-            $$el = $event.target,
-            $$c = $$el.checked ? true : false
-          if (Array.isArray($$a)) {
-            var $$v = null,
-              $$i = _vm._i($$a, $$v)
-            if ($$el.checked) {
-              $$i < 0 && _vm.$set(_vm.item, "completed", $$a.concat([$$v]))
+        change: [
+          function ($event) {
+            var $$a = _vm.item.completed,
+              $$el = $event.target,
+              $$c = $$el.checked ? true : false
+            if (Array.isArray($$a)) {
+              var $$v = null,
+                $$i = _vm._i($$a, $$v)
+              if ($$el.checked) {
+                $$i < 0 && _vm.$set(_vm.item, "completed", $$a.concat([$$v]))
+              } else {
+                $$i > -1 &&
+                  _vm.$set(
+                    _vm.item,
+                    "completed",
+                    $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                  )
+              }
             } else {
-              $$i > -1 &&
-                _vm.$set(
-                  _vm.item,
-                  "completed",
-                  $$a.slice(0, $$i).concat($$a.slice($$i + 1))
-                )
+              _vm.$set(_vm.item, "completed", $$c)
             }
-          } else {
-            _vm.$set(_vm.item, "completed", $$c)
-          }
-        },
+          },
+          function ($event) {
+            return _vm.update()
+          },
+        ],
       },
     }),
     _vm._v(" "),
@@ -44103,14 +44132,14 @@ var render = function () {
     _vm._v(" "),
     _c(
       "button",
-      { staticClass: "edit" },
-      [_c("font-awesome-icon", { attrs: { icon: "edit" } })],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "button",
-      { staticClass: "delete" },
+      {
+        staticClass: "delete",
+        on: {
+          click: function ($event) {
+            return _vm.remove()
+          },
+        },
+      },
       [_c("font-awesome-icon", { attrs: { icon: "trash" } })],
       1
     ),
@@ -44145,7 +44174,17 @@ var render = function () {
       return _c(
         "div",
         { key: index },
-        [_c("list-item", { staticClass: "item", attrs: { item: item } })],
+        [
+          _c("list-item", {
+            staticClass: "item",
+            attrs: { item: item },
+            on: {
+              reload: function ($event) {
+                return _vm.getTodos()
+              },
+            },
+          }),
+        ],
         1
       )
     }),

@@ -81,11 +81,10 @@ class TodoController extends Controller
     public function update(Request $request, $id)
     {
         $todo = Todo::findOrFail($id);
+        
+    
+        $todo->completed = $request->completed;
 
-        $todo->todo = $request->todo;
-        if($request->has('completed')){
-            $todo->complited = true;
-        }
 
         $todo->save();
 
